@@ -16,7 +16,6 @@ Mat negative_image(Mat image){
     return negative;
 }
 
-
 Mat add_scalar(Mat image, int factor){
     /*
      * Add a scalar to the entire image
@@ -35,12 +34,19 @@ Mat add_scalar(Mat image, int factor){
 
     //*****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+    int rows = image.rows;
+    int cols = image.cols;
+    Mat result = image.clone();
 
-  
+    for(int i=0; i<rows; i++){
+        for(int j=0; j<cols; j++){
+            result.at<uchar>(i,j) = (result.at<uchar>(i,j) + factor) % 256;
+        }
+    }
 
     //*****END OF YOUR CODE(DO NOT DELETE / MODIFY THIS LINE) *****
 
-    return image;
+    return result;
 
 }
 
@@ -62,10 +68,19 @@ Mat mul_scalar(Mat image, float factor){
 
     //*****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-  
+    int rows = image.rows;
+    int cols = image.cols;
+    Mat result = image.clone();
+
+    for(int i=0; i<rows; i++){
+        for(int j=0; j<cols; j++){
+            result.at<uchar>(i,j) = int(result.at<uchar>(i,j) * factor) % 256;
+        }
+    }
+
     //*****END OF YOUR CODE(DO NOT DELETE / MODIFY THIS LINE) *****
 
-    return image;
+    return result;
 
 }
 
@@ -90,10 +105,34 @@ Mat draw_squares(int rows, int cols){
 
     //*****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    
+    Mat result = Mat(rows, cols, CV_8UC3, Vec3b(255, 255, 255));
+
+    Vec3b red = Vec3b(0, 0, 255);
+    Vec3b green = Vec3b(0, 255, 0);
+    Vec3b yellow = Vec3b(0, 255, 255);
+
+
+    for(int i=0; i<rows / 2; i++){
+        for(int j=cols / 2; j<cols; j++){
+            result.at<Vec3b>(i,j) = red;
+        }
+    }
+
+    for(int i=rows / 2; i<rows; i++){
+        for(int j=0; j<cols / 2; j++){
+            result.at<Vec3b>(i,j) = green;
+        }
+    }
+
+    for(int i=rows / 2; i<rows; i++){
+        for(int j=cols/2; j<cols; j++){
+            result.at<Vec3b>(i,j) = yellow;
+        }
+    }
+
     //*****END OF YOUR CODE(DO NOT DELETE / MODIFY THIS LINE) *****
 
-    return Mat(1,1, CV_64F, 0.0);;
+    return result;
 
 }
 
