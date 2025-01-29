@@ -16,6 +16,7 @@ Mat negative_image(Mat image){
     return negative;
 }
 
+
 Mat add_scalar(Mat image, int factor){
     /*
      * Add a scalar to the entire image
