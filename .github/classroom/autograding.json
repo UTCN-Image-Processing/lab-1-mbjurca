@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "Negative Image Test",
+      "setup": "",
+      "run": "ctest --test-dir build --output-on-failure --tests-regex Lab1Test\\.NegativeImage",
+      "points": 10
+    },
+    {
+      "name": "Add Scalar Test",
+      "setup": "",
+      "run": "ctest --test-dir build --output-on-failure --tests-regex Lab1Test\\.AddScalar",
+      "points": 10
+    },
+    {
+      "name": "Multiply Scalar Test",
+      "setup": "",
+      "run": "ctest --test-dir build --output-on-failure --tests-regex Lab1Test\\.MulScalar_Regular",
+      "points": 10
+    },
+    {
+      "name": "Draw Squares Test",
+      "setup": "",
+      "run": "ctest --test-dir build --output-on-failure --tests-regex Lab1Test\\.DrawSquares",
+      "points": 10
+    }
+  ]
+}

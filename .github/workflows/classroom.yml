@@ -1,0 +1,98 @@
+name: Autograding Tests
+
+on:
+  - workflow_dispatch
+  - push
+  
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  autograding:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout Student Repository
+      - name: Checkout Student Repo
+        uses: actions/checkout@v3
+
+      # Step 2: Checkout Private Tests Repository
+      - name: Checkout Private Tests Repo
+        uses: actions/checkout@v3
+        with:
+          repository: mbjurca/IP_2025_Lab1_tests
+          token: ${{ secrets.TEST_REPO_TOKEN }}
+          path: private_tests
+          ref: main
+
+      # Step 3: Copy Student Code into Private Tests
+      - name: Copy Student Code into Private Tests
+        run: |
+          cp src/lab1.cpp private_tests/src/lab1.cpp
+          cp src/lab1.h   private_tests/src/lab1.h
+
+      # Step 4: Install Dependencies
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ libopencv-dev
+
+      # Step 5: Configure CMake
+      - name: Configure (CMake)
+        run: cmake -S private_tests -B build
+
+      # Step 6: Build the Project
+      - name: Build
+        run: cmake --build build
+
+      # 5) Negative Image Test
+      - name: Negative Image Test
+        id: negative-image
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Negative Image Test
+          command: ctest --test-dir build --output-on-failure --tests-regex Lab1Test\\.NegativeImage
+          max-score: 10
+
+      # 6) Add Scalar Test
+      - name: Add Scalar Test
+        id: add-scalar
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Add Scalar Test
+          command: ctest --test-dir build --output-on-failure --tests-regex Lab1Test\\.AddScalar
+          max-score: 10
+
+      # 7) Multiply Scalar Test
+      - name: Multiply Scalar Test
+        id: multiply-scalar
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Multiply Scalar Test
+          command: ctest --test-dir build --output-on-failure --tests-regex Lab1Test\\.MulScalar_Regular
+          max-score: 10
+
+      # 8) Draw Squares Test
+      - name: Draw Squares Test
+        id: draw-squares
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Draw Squares Test
+          command: ctest --test-dir build --output-on-failure --tests-regex Lab1Test\\.DrawSquares
+          max-score: 10
+
+      # 9) Report results to GitHub Classroom
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Provide the "id" of each grader step (minus the ".outputs.result" suffix),
+          # separated by commas.  These match the 'id:' keys above.
+          runners: negative-image,add-scalar,multiply-scalar,draw-squares
+        env:
+          # Map each step's output to an environment variable
+          NEGATIVE-IMAGE_RESULTS: ${{ steps.negative-image.outputs.result }}
+          ADD-SCALAR_RESULTS: ${{ steps.add-scalar.outputs.result }}
+          MULTIPLY-SCALAR_RESULTS: ${{ steps.multiply-scalar.outputs.result }}
+          DRAW-SQUARES_RESULTS: ${{ steps.draw-squares.outputs.result }}
